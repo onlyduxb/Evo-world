@@ -1,7 +1,7 @@
 # ruff: noqa
 from event_system.event_handler.event_bus import EventBus
 from event_system.event_handler.event_queue import EventQueue
-from event_system.events.agent_events import AgentAte, AgentDied
+from event_system.event_types.agent_events import AgentAte, AgentDied
 from entity_system.agent_manager import Agent
 from logger import setup_logger
 
