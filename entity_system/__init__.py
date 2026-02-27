@@ -1,5 +1,6 @@
 # ruff: noqa
 
-from .agent_manager import Agent
+from .entity_types.entity import Entity
+from .entity_types.agent import Agent
 
-__all__ = ["Agent"]
+__all__ = ["Entity", "Agent"]

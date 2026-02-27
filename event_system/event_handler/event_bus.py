@@ -19,20 +19,19 @@ class EventBus:
         """__init__ Initialise a bus."""
         self.__subscribers: defaultdict[Type[Event], list[Handler]] = defaultdict(list)
         self.__dispatched: defaultdict[Type[Event], list[Handler]] = defaultdict(list)
-        self.subscribe(Event, global_listener)
+        self.subscribe_handler(Event, global_listener)
 
-    def subscribe(self, event_type: Type[T], handler: Callable[[T], None]) -> None:
-        """Subscribe an event to the subscribers.
+    def subscribe_event(self, event_type: Type[T]):
+        """Subscribe subscribe an event type to the subscribers list.
 
         Parameters
         ----------
-        event_type : Type[T]
+        event_type : Type[Event]
             Event class.
-        handler : Callable[[T], None]
-            Function that runs on event.
-
+    
         """
-        self.__subscribers[event_type].append(cast(Handler, handler))
+        if event_type not in self.__subscribers:
+            self.__subscribers[event_type] = []
 
     def unsubscribe_event(self, event_type: Type[Event]) -> None:
         """Unsubscribe_event unsubscribe an event type from the subscribers list.
@@ -45,6 +44,20 @@ class EventBus:
         """
         if event_type in self.__subscribers:
             del self.__subscribers[event_type]
+
+    def subscribe_handler(self, event_type: Type[T], handler: Callable[[T], None]) -> None:
+        """Subscribe an event to the subscribers.
+
+        Parameters
+        ----------
+        event_type : Type[T]
+            Event class.
+        handler : Callable[[T], None]
+            Function that runs on event.
+
+        """
+        self.__subscribers[event_type].append(cast(Handler, handler))
+
 
     def unsubscribe_handler(
         self, event_type: Type[T], handler: Callable[[T], None]

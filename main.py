@@ -1,8 +1,9 @@
 # ruff: noqa
 from event_system.event_types.agent_events import AgentAte, AgentDied
 from event_system.tick_handler import TickHandler
-from entity_system.agent_manager import Agent
+from entity_system.entity_types.agent import Agent
 from logger import setup_logger
+from world_system.generation_handler import GenerationHandler
 
 setup_logger()
 
@@ -10,7 +11,7 @@ setup_logger()
 
 
 def death(event: AgentDied) -> None:
-    print(f"{event.source.agent_id} died to {event.cause}")
+    print(f"{event.source.id} died to {event.cause}")
 
 
 def count(event: AgentDied) -> None:
@@ -22,15 +23,22 @@ def fail(event: AgentDied) -> None:
 
 
 def eat(event: AgentAte) -> None:
-    print(f"{event.source.agent_id} ate and gained {event.energy_gain} energy")
+    print(f"{event.source.id} ate and gained {event.energy_gain} energy")
 
 
-tick_handler: TickHandler = TickHandler(10)
+gen_handler = GenerationHandler(25, 50)
+print(gen_handler)
+tick_handler: TickHandler = TickHandler(max_events=10)
 test_agent = Agent()
-tick_handler.register_handler(AgentDied, death)
-tick_handler.register_handler(AgentDied, count)
-tick_handler.register_handler(AgentAte, eat)
-tick_handler.register_handler(AgentDied, fail)
+tick_handler.subscribe_handler(AgentDied, death)
+tick_handler.subscribe_handler(AgentDied, count)
+tick_handler.subscribe_handler(AgentAte, eat)
+tick_handler.subscribe_handler(AgentDied, fail)
+
+
+
+
+
 tick_handler.schedule_event(
     AgentAte(
         energy_gain=15,

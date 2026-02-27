@@ -24,6 +24,13 @@ class TickHandler:
         self.__event_queue.publish(self.__event_bus)
         self.current_tick += 1
 
-    @log("Registered handler.")
-    def register_handler(self, event_type: type[Event], handler: Callable[[T], None]) -> None:
-        self.__event_bus.subscribe(event_type, cast(Handler, handler))
+    @log("Subscribed handler.")
+    def subscribe_handler(self, event_type: type[Event], handler: Callable[[T], None]) -> None:
+        self.__event_bus.subscribe_handler(event_type, cast(Handler, handler))
+
+    @log("Unsubscribed handler.")
+    def unsubscribe_handler(self, event_type: type[Event], handler: Callable[[T], None]):
+        self.__event_bus.unsubscribe_handler(event_type, cast(Handler, handler))
+
+    def unsubscribe_event(self, event_type: type[Event]):
+        self.__event_bus.unsubscribe_event(event_type)

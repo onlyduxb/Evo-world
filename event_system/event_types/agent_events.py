@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from .event import Event
-from entity_system.agent_manager import Agent
+from entity_system.entity_types.agent import Agent
 
 
 @dataclass(kw_only=True)
