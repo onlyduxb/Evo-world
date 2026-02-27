@@ -4,8 +4,6 @@ import logging
 from collections import defaultdict
 from typing import Callable, Type, TypeVar, cast
 
-from decorator_toolkit import log
-
 from ..event_types.event import Event
 from ..event_types.handler import Handler
 
@@ -23,7 +21,6 @@ class EventBus:
         self.__dispatched: defaultdict[Type[Event], list[Handler]] = defaultdict(list)
         self.subscribe(Event, global_listener)
 
-    @log("Subscribed event.")
     def subscribe(self, event_type: Type[T], handler: Callable[[T], None]) -> None:
         """Subscribe an event to the subscribers.
 
@@ -37,7 +34,6 @@ class EventBus:
         """
         self.__subscribers[event_type].append(cast(Handler, handler))
 
-    @log("Unsubscribed event.")
     def unsubscribe_event(self, event_type: Type[Event]) -> None:
         """Unsubscribe_event unsubscribe an event type from the subscribers list.
 
@@ -50,7 +46,6 @@ class EventBus:
         if event_type in self.__subscribers:
             del self.__subscribers[event_type]
 
-    @log("Unsubscribed handler.")
     def unsubscribe_handler(
         self, event_type: Type[T], handler: Callable[[T], None]
     ) -> None:
@@ -67,7 +62,6 @@ class EventBus:
         if event_type in self.__subscribers:
             self.__subscribers[event_type].remove(cast(Handler, handler))
 
-    @log("Dispatched event.")
     def dispatch(self, event: Event) -> None:
         """Run all of the handlers on the given event.
 

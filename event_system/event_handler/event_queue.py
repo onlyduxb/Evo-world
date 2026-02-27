@@ -1,8 +1,6 @@
 """Event queue."""
 
 import logging
-
-from decorator_toolkit import log
 from .event_bus import EventBus
 from ..event_types.event import Event
 
@@ -24,7 +22,6 @@ class EventQueue:
         self.max_events: int = max_events
         self.__queue: list[Event] = []
 
-    @log("Appended an event to queue.")
     def append(self, event: Event):
         """Append an event to the queue.
 
@@ -40,7 +37,6 @@ class EventQueue:
         else:
             logger.fatal("Event queue full")
 
-    @log("Popped an event from the queue.")
     def pop(self) -> Event | None:
         """Remove the first event in the queue.
 
@@ -55,7 +51,6 @@ class EventQueue:
         except Exception:
             logger.fatal("Failed to pop array")
 
-    @log("Removed an event from the queue.")
     def remove(self, event: Event):
         """Remove a specific event from the queue.
 
@@ -68,7 +63,6 @@ class EventQueue:
         if event in self.__queue:
             self.__queue.remove(event)
 
-    @log("Peeked the queue.")
     def peek(self) -> Event | None:
         """Peek the top item in the queue.
 
@@ -94,12 +88,10 @@ class EventQueue:
         """
         return len(self.__queue) == 0
 
-    @log("Cleared the queue.")
     def clear(self):
         """Clear the queue."""
         self.__queue = []
 
-    @log("Published events.")
     def publish(self, bus: EventBus):
         """Publish the queue to an event bus.
 
@@ -117,7 +109,6 @@ class EventQueue:
             event.tick_delay -= 1
         self.clean()
 
-    @log("Cleaned the queue.")
     def clean(self):
         """Remove any events that have fired or been cancelled."""
         self.__queue = [
@@ -126,7 +117,6 @@ class EventQueue:
             if event.tick_delay >= 0 and not event.cancelled
         ]
 
-    @log("Sorted queue")
     def sort_queue(self):
         """Sort the queue ordering by priority."""
         self.__queue.sort(key=lambda event: event.priority, reverse=True)

@@ -1,7 +1,6 @@
 # ruff: noqa
-from event_system.event_handler.event_bus import EventBus
-from event_system.event_handler.event_queue import EventQueue
 from event_system.event_types.agent_events import AgentAte, AgentDied
+from event_system.tick_handler import TickHandler
 from entity_system.agent_manager import Agent
 from logger import setup_logger
 
@@ -26,23 +25,25 @@ def eat(event: AgentAte) -> None:
     print(f"{event.source.agent_id} ate and gained {event.energy_gain} energy")
 
 
-
-current_tick = 0
+tick_handler: TickHandler = TickHandler(10)
 test_agent = Agent()
-b: EventBus = EventBus()
-q: EventQueue = EventQueue(10)
-b.subscribe(AgentDied, death)
-b.subscribe(AgentDied, count)
-b.subscribe(AgentAte, eat)
-b.subscribe(AgentDied, fail)
-q.append(
-    AgentAte(energy_gain=15, source=test_agent, tick_created=current_tick, priority=2)
+tick_handler.register_handler(AgentDied, death)
+tick_handler.register_handler(AgentDied, count)
+tick_handler.register_handler(AgentAte, eat)
+tick_handler.register_handler(AgentDied, fail)
+tick_handler.schedule_event(
+    AgentAte(
+        energy_gain=15,
+        source=test_agent,
+        tick_created=tick_handler.current_tick,
+        priority=2,
+    )
 )
-q.append(
+tick_handler.schedule_event(
     AgentDied(
         cause="starvation",
         source=test_agent,
-        tick_created=current_tick,
+        tick_created=tick_handler.current_tick,
         tick_delay=2,
         priority=0,
     )
@@ -50,7 +51,7 @@ q.append(
 # b.unsubscribe_event(AgentDied)
 while True:
     input("Press enter to complete tick")
-    q.publish(b)
+    tick_handler.process_tick()
 
 
 # -- EXAMPLE CODE (end) --
