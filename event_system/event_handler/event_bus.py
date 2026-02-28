@@ -6,7 +6,7 @@ from typing import Callable, Type, TypeVar, cast
 
 from ..event_types.event import Event
 from ..event_types.handler import Handler
-
+from ..event_recorder import EventRecorder
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T", bound=Event)
@@ -18,7 +18,7 @@ class EventBus:
     def __init__(self):
         """__init__ Initialise a bus."""
         self.__subscribers: defaultdict[Type[Event], list[Handler]] = defaultdict(list)
-        self.__dispatched: defaultdict[Type[Event], list[Handler]] = defaultdict(list)
+        self.__event_recorder: EventRecorder = EventRecorder()
         self.subscribe_handler(Event, global_listener)
 
     def subscribe_event(self, event_type: Type[T]):
@@ -75,15 +75,18 @@ class EventBus:
         if event_type in self.__subscribers:
             self.__subscribers[event_type].remove(cast(Handler, handler))
 
-    def dispatch(self, event: Event) -> None:
+    def dispatch(self, current_tick: int, event: Event) -> None:
         """Run all of the handlers on the given event.
 
         Parameters
         ----------
+        current_tick : int
+            The current tick of the simulation.
         event : Event
             Event to run handlers on.
 
         """
+        self.__event_recorder.record_event(current_tick, event)
         for cls in type(event).__mro__:
             if cls is object:
                 continue
@@ -92,7 +95,7 @@ class EventBus:
                     handler(event)
                 except Exception:
                     logger.fatal(f"Handler failed while processing {event}")
-                self.__dispatched[cls].append(handler)
+
 
 
 def global_listener(event: Event):

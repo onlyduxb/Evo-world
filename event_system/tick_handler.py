@@ -21,7 +21,7 @@ class TickHandler:
     
     @log("Processed tick.")
     def process_tick(self):
-        self.__event_queue.publish(self.__event_bus)
+        self.__event_queue.publish( self.current_tick, self.__event_bus)
         self.current_tick += 1
 
     @log("Subscribed handler.")

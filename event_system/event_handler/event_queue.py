@@ -92,11 +92,13 @@ class EventQueue:
         """Clear the queue."""
         self.__queue = []
 
-    def publish(self, bus: EventBus):
+    def publish(self, current_tick: int, bus: EventBus):
         """Publish the queue to an event bus.
 
         Parameters
         ----------
+        current_tick : int
+            The current tick of the simulation.
         bus : EventBus
             Event bus.
 
@@ -105,7 +107,7 @@ class EventQueue:
         events = self.__queue[:]
         for event in events:
             if event.tick_delay <= 0 and not event.cancelled:
-                bus.dispatch(event)
+                bus.dispatch(current_tick, event)
             event.tick_delay -= 1
         self.clean()
 

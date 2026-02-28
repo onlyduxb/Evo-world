@@ -7,6 +7,4 @@ from dataclasses import dataclass
 @dataclass()
 class GroundTile(Tile):
     cell: str = "#"
-
-    def __str__(self) -> str:
-        return self.cell
+    energy_consumption: int = 10
